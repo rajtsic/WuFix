@@ -1,9 +1,14 @@
 @echo off
-REM --> sources
-REM --> ttps://github.com/NicoKnowsTech/NicoKnowsTech/blob/main/NKT_TOOL.bat
+REM --> ::: sources :::
+REM --> how it starter -> https://answers.microsoft.com/en-us/windows/forum/all/windows-update-error/1b2ed12d-7758-43f7-9238-412c915fd317
+REM --> https://github.com/NicoKnowsTech/NicoKnowsTech/blob/main/NKT_TOOL.bat
+REM --> https://github.com/bmrf/tron/blob/master/resources/stage_4_repair/disable_windows_telemetry/purge_windows_10_telemetry.bat
+REM --> https://answers.microsoft.com/en-us/windows/forum/all/preparing-windows7-for-windows10-upgrade/eeaab542-a96c-419d-a498-e391344ea9d5
+REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/repair-a-windows-image?view=windows-11
+REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/clean-up-the-winsxs-folder?view=windows-11
 
 
-REM --> Check for permissions
+REM --> Check for permissions and gain admin privileges
     IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
 >nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
 ) ELSE (
@@ -28,8 +33,15 @@ if '%errorlevel%' NEQ '0' (
 :gotAdmin
     pushd "%CD%"
     CD /D "%~dp0"
-REM -----------------------------------> 
+REM -------------------- from this point we are admin -------------------->
 
+
+echo DISCLAIMER: This open-source script automates common IT tasks using built-in Windows commands. 
+echo It does not rely on third-party applications or tools. 
+echo By using this tool, you accept sole responsibility for any potential damage. 
+echo If you do not agree, please close this window. 
+echo Proceed at your own risk. - Press any key to continue
+pause >nul
 
 REM --> Check if restore is enabled and enable it if not
 echo Checking if restore is enabled
@@ -41,19 +53,11 @@ if %errorlevel% neq 0 (
     echo System restore is already enabled.
 )
 
+
 REM --> Start a restore point using PowerShell with admin privileges
 echo Starting a restore point...
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -Command ""Checkpoint-Computer -Description \""PreWufix\"" -RestorePointType \""MODIFY_SETTINGS\""; Start-Sleep -Seconds 2; Exit""' -Verb RunAs}"
 
-
-
-REM --> Set the startup type as automatic for services
-echo Setting the startup type of services as automatic...
-sc config trustedinstaller start= auto
-sc config wuauserv start= auto
-sc config bits start= auto
-sc config cryptsvc start= auto
-echo Startup type set as automatic for the services.
 
 REM --> Wait for the restore point to be completed
 setlocal enabledelayedexpansion
@@ -72,13 +76,97 @@ if !remainingTime! gtr 0 (
 )
 
 
+REM --> Stop specified services
+echo Stopping services...
+echo Stopping Background Intelligent Transfer Service (BITS)...
+echo y|net stop bits
+
+echo Stopping Windows Update Service...
+echo y|net stop wuauserv
+
+echo Stopping Windows Installer Service...
+echo y|net stop msiserver
+
+echo Stopping Cryptographic Services...
+echo y|net stop cryptsvc
+
+echo Stopping Application Identity Service...
+echo y|net stop appidsvc
+echo Services stopped successfully.
+
+REM --> Reset Winsock configuration to default settings
+echo Resetting Winsock configuration to default settings...
+netsh winsock reset
+netsh winsock reset proxy
+echo Winsock configuration has been reset to default settings.
+
+
+REM --> Set the startup type as automatic for the services: trustedinstaller, wuauserv,bits and cryptsvc
+echo Setting the startup type of services as automatic...
+set "services=trustedinstaller wuauserv bits cryptsvc"
+
+REM --> Check and set startup type for each service
+for %%s in (%services%) do (
+    sc qc %%s | findstr "START_TYPE" | findstr /i "AUTO" > nul
+    if errorlevel 1 (
+        sc config %%s start= auto
+        echo Startup type for %%s service set to automatic.
+    ) else (
+        echo Startup type for %%s service is already set to automatic.
+    )
+)
+echo Startup type set as automatic for the services.
+
+
+REM -->	Disable Cortana globally
+echo Disabling Cortana globally...
+REM --> Disable Cortana
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d "0" /f
+
+REM --> Disable Cortana above lock screen
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortanaAboveLock" /t REG_DWORD /d "0" /f
+
+REM --> Disable search using location
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearchToUseLocation" /t REG_DWORD /d "0" /f
+echo Cortana has been disabled globally.
+
+
+
+REM Stop Xbox services and set their startup type to "demand"
+echo Stopping Xbox services and setting startup type...
+sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
+sc qc XblGameSave | findstr "STATE" | findstr "RUNNING" && sc stop XblGameSave
+sc qc XboxNetApiSvc | findstr "STATE" | findstr "RUNNING" && sc stop XboxNetApiSvc
+sc qc XboxGipSvc | findstr "STATE" | findstr "RUNNING" && sc stop XboxGipSvc
+sc qc xbgm | findstr "STATE" | findstr "RUNNING" && sc stop xbgm
+echo Stop Xbox services - Done...
+
+REM --> Set the startup type as automatic for the services: XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc and xbgm
+echo Setting the startup type of services as demand...
+set "services=XblAuthManager XblGameSave XboxNetApiSvc XboxGipSvc xbgm"
+
+REM --> Check and set startup type for each service
+for %%s in (%services%) do (
+    sc qc %%s | findstr "START_TYPE" | findstr /i "DEMAND" > nul
+    if errorlevel 1 (
+        sc config %%s start= demand
+        echo Startup type for %%s service set to demand.
+    ) else (
+        echo Startup type for %%s service is already set to demand.
+    )
+)
+echo Startup type set as demand for the services.
+
+
+REM --> Add registry values to enable Processor Performance Boost Mode
+echo Adding registry values enable Processor Performance Boost Mode...
+REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
+
 REM --> Add registry values to see minimum and maximum processor states
 echo Adding registry values for minimum and maximum processor states...
 
 REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
-
 REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
-
 
 REM --> Set the current power scheme to the minimum processor state to 100% (plugged in)
 powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
@@ -90,37 +178,11 @@ Powercfg -setactive SCHEME_CURRENT
 echo Registry values added and current power scheme updated.
 
 
-
-REM --> Stop specified services
-echo Stopping services...
-
-echo Stopping Background Intelligent Transfer Service (BITS)...
-net stop bits
-
-echo Stopping Windows Update Service...
-net stop wuauserv
-
-echo Stopping Windows Installer Service...
-net stop msiserver
-
-echo Stopping Cryptographic Services...
-net stop cryptsvc
-
-echo Stopping Application Identity Service...
-net stop appidsvc
-
-echo Services stopped.
-
-REM --> Reset Winsock configuration to default settings
-echo Resetting Winsock configuration to default settings...
-netsh winsock reset
-netsh winsock reset proxy
-echo Winsock configuration has been reset to default settings.
-
-
 REM --> Remove Temporary Files
 REM --> Deletes temporary files from the Windows system directories
 REM --> Cleans up the Windows temp folder, prefetch files, and user temp folder
+echo Starting to clean Temporary file from Windws system directories...
+echo.
 del /s /f /q c:\windows\temp\*.* 2> nul
 rd /s /q c:\windows\temp 2> nul
 md c:\windows\temp 2> nul
@@ -145,20 +207,17 @@ del /f /q c:\windows\recent 2> nul
 rd /s /q c:\windows\spool\printers 2> nul
 del /f /q c:\windows\spool\printers 2> nul
 del c:\WIN386.SWP 2> nul
+echo.
 echo Temporary files removed.
 
 
 REM --> Delete and reset Windows Update policies
 echo Deleting and resetting Windows Update policies...
-
 reg delete "HKCU\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /f
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /f
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" /f
-
 echo Windows Update policies have been deleted and reset.
-
-
  
  
 REM --> Delete BITS cache
@@ -184,6 +243,7 @@ echo Resetting the BITS service and the Windows Update service to the default se
 sc.exe sdset bits D:(A;CI;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)
 sc.exe sdset wuauserv D:(A;;CCLCSWRPLORC;;;AU)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)
 echo BITS service and Windows Update service have been reset to the default security descriptor.
+
 
 REM --> Register DLL files
 echo Registering DLL files...
@@ -226,6 +286,7 @@ regsvr32.exe /s %windir%\system32\wuwebv.dll
 regsvr32.exe /s %windir%\system32\wudriver.dll
 echo DLL files have been registered successfully.
 
+
 REM --> Update Windows Update policy
 echo Updating Windows Update policy...
 echo If stuck on "Updating policy..." for more than 10 minutes, press Ctrl + C once to keep it going.
@@ -235,28 +296,27 @@ echo Windows Update policy has been updated.
 
 REM --> Perform system cleanup and health checks
 echo Performing system cleanup and health checks...
-
 echo Cleaning up unused drivers...
 rundll32.exe pnpclean.dll,RunDLL_PnpClean /DRIVERS /MAXCLEAN
 
 echo Scanning the system image for health issues...
-dism /Online /Cleanup-image /ScanHealth
-dism /Online /Cleanup-image /CheckHealth
+Dism /Online /Cleanup-Image /ScanHealth
+Dism /Online /Cleanup-Image /CheckHealth
 
 echo Restoring the system image to a healthy state...
-dism /Online /Cleanup-image /RestoreHealth
+Dism /Online /Cleanup-Image /RestoreHealth
 
 echo Starting component cleanup...
-dism /Online /Cleanup-image /StartComponentCleanup
+Dism /online /Cleanup-Image /StartComponentCleanup
 
 echo Scanning system files for integrity violations...
 Sfc /ScanNow
 echo System cleanup and health checks have been completed.
 
 REM --> Start chkdsk utility and confirm with "yes"
-echo Initiating disk check (CHKDSK) and confirming with "yes"...
-echo y|chkdsk /r
-echo Disk check (CHKDSK) has been initiated.
+REM --> echo Initiating disk check (CHKDSK) and confirming with "yes"...
+REM --> echo y|chkdsk /r
+REM --> echo Disk check (CHKDSK) has been initiated.
 
 REM --> Start specified services
 echo Starting services...
