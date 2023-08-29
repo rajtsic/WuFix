@@ -5,7 +5,7 @@ It performs tasks such as enabling system restore, setting service startup types
 
 
 
-    Double-Click to Run: Thanks to NicoKnowsTehc - https://github.com/NicoKnowsTech - The script will automatically request and acquire administrative rights at the beginning.
+    Double-Click to Run: Thanks to NicoKnowsTech - https://github.com/NicoKnowsTech - The script will automatically request and acquire administrative rights at the beginning.
 
     Then let the script run.
 
