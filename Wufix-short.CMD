@@ -131,7 +131,6 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearc
 echo Cortana has been disabled globally.
 
 
-
 REM Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
 sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
@@ -156,6 +155,44 @@ for %%s in (%services%) do (
     )
 )
 echo Startup type set as demand for the services.
+
+
+echo Enabling Storage Sense
+REM --> Add DWORD value 01 to enable Storage Sense
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
+
+REM --> Add DWORD value 1024 to run Storage Sense
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
+
+echo Run storage sense every week
+REM --> Add DWORD value 2048 to run Storage Sense every week
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 2048 /t REG_DWORD /d 7 /f
+
+echo Set storage sense never delete downloads
+REM --> Add DWORD value 32 to never delete downloads
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 0 /f
+
+REM --> Add DWORD value 512 to never delete downloads
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 0 /f
+
+echo Set storagesense to empty recycle bin every 60days
+REM --> Add DWORD value 256 to empty recycle bin every 60 days
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
+echo Registry values added
+
+
+REM -->  set visual effect to custom
+echo Setting visual effects to Custom
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
+
+REM --> wanna set syste propterties performance options to optimal
+REM --> however, it doesnt i disable the following
+REM --> animation windows when minimasing/maximasing
+REM --> animate taskbar 
+REm --> Enable peak. 
+echo making performance changes to visual effects
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
+echo Registry values changed. 
 
 
 REM --> Add registry values to enable Processor Performance Boost Mode
@@ -313,10 +350,6 @@ echo Scanning system files for integrity violations...
 Sfc /ScanNow
 echo System cleanup and health checks have been completed.
 
-REM --> Start chkdsk utility and confirm with "yes"
-REM --> echo Initiating disk check (CHKDSK) and confirming with "yes"...
-REM --> echo y|chkdsk /r
-REM --> echo Disk check (CHKDSK) has been initiated.
 
 REM --> Start specified services
 echo Starting services...
