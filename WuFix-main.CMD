@@ -1,6 +1,6 @@
 @echo off
 REM --> ::: sources :::
-REM --> how it starter -> https://answers.microsoft.com/en-us/windows/forum/all/windows-update-error/1b2ed12d-7758-43f7-9238-412c915fd317
+REM --> how it started -> https://answers.microsoft.com/en-us/windows/forum/all/windows-update-error/1b2ed12d-7758-43f7-9238-412c915fd317
 REM --> https://github.com/NicoKnowsTech/NicoKnowsTech/blob/main/NKT_TOOL.bat
 REM --> https://github.com/bmrf/tron/blob/master/resources/stage_4_repair/disable_windows_telemetry/purge_windows_10_telemetry.bat
 REM --> https://answers.microsoft.com/en-us/windows/forum/all/preparing-windows7-for-windows10-upgrade/eeaab542-a96c-419d-a498-e391344ea9d5
@@ -118,20 +118,7 @@ for %%s in (%services%) do (
 echo Startup type set as automatic for the services.
 
 
-REM -->	Disable Cortana globally
-echo Disabling Cortana globally...
-REM --> Disable Cortana
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d "0" /f
-
-REM --> Disable Cortana above lock screen
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortanaAboveLock" /t REG_DWORD /d "0" /f
-
-REM --> Disable search using location
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearchToUseLocation" /t REG_DWORD /d "0" /f
-echo Cortana has been disabled globally.
-
-
-REM Stop Xbox services and set their startup type to "demand"
+REM --> Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
 sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
 sc qc XblGameSave | findstr "STATE" | findstr "RUNNING" && sc stop XblGameSave
@@ -157,8 +144,25 @@ for %%s in (%services%) do (
 echo Startup type set as demand for the services.
 
 
-echo Enabling Storage Sense
+REM -->	Disable Cortana globally
+echo Disabling Cortana globally...
+REM --> Disable Cortana
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d "0" /f
+
+REM --> Disable Cortana above lock screen
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortanaAboveLock" /t REG_DWORD /d "0" /f
+
+REM --> Disable search using location
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearchToUseLocation" /t REG_DWORD /d "0" /f
+echo Cortana has been disabled globally.
+
+
+REM --> Enable, use printscreen to open snipping tool
+reg add "HKCU\Control Panel\Keyboard" /v "PrintScreenKeyForSnippingEnabled" /t REG_DWORD /d 1 /f
+
+
 REM --> Add DWORD value 01 to enable Storage Sense
+echo Enabling Storage Sense
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
 
 REM --> Add DWORD value 1024 to run Storage Sense
@@ -187,8 +191,8 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" 
 
 REM --> wanna set syste propterties performance options to optimal
 REM --> however, it doesnt i disable the following
-REM --> animation windows when minimasing/maximasing
-REM --> animate taskbar 
+REM --> Animation windows when minimising/maximising
+REM --> Animate taskbar 
 REm --> Enable peak. 
 echo making performance changes to visual effects
 reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
@@ -197,13 +201,13 @@ echo Registry values changed.
 
 REM --> Add registry values to enable Processor Performance Boost Mode
 echo Adding registry values enable Processor Performance Boost Mode...
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
 
 REM --> Add registry values to see minimum and maximum processor states
 echo Adding registry values for minimum and maximum processor states...
 
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
 
 REM --> Set the current power scheme to the minimum processor state to 100% (plugged in)
 powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
