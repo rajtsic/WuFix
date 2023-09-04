@@ -2,7 +2,6 @@
 REM --> ::: sources :::
 REM --> how it starter -> https://answers.microsoft.com/en-us/windows/forum/all/windows-update-error/1b2ed12d-7758-43f7-9238-412c915fd317
 REM --> https://github.com/NicoKnowsTech/NicoKnowsTech/blob/main/NKT_TOOL.bat
-REM --> https://github.com/bmrf/tron/blob/master/resources/stage_4_repair/disable_windows_telemetry/purge_windows_10_telemetry.bat
 REM --> https://answers.microsoft.com/en-us/windows/forum/all/preparing-windows7-for-windows10-upgrade/eeaab542-a96c-419d-a498-e391344ea9d5
 REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/repair-a-windows-image?view=windows-11
 REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/clean-up-the-winsxs-folder?view=windows-11
@@ -56,7 +55,7 @@ if %errorlevel% neq 0 (
 
 REM --> Start a restore point using PowerShell with admin privileges
 echo Starting a restore point...
-PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -Command ""Checkpoint-Computer -Description \""PreWufix\"" -RestorePointType \""MODIFY_SETTINGS\""; Start-Sleep -Seconds 2; Exit""' -Verb RunAs}"
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -Command ""Checkpoint-Computer -Description \""Pre-onlyWufix\"" -RestorePointType \""MODIFY_SETTINGS\""; Start-Sleep -Seconds 2; Exit""' -Verb RunAs}"
 
 
 REM --> Wait for the restore point to be completed
@@ -116,103 +115,6 @@ for %%s in (%services%) do (
     )
 )
 echo Startup type set as automatic for the services.
-
-
-REM -->	Disable Cortana globally
-echo Disabling Cortana globally...
-REM --> Disable Cortana
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d "0" /f
-
-REM --> Disable Cortana above lock screen
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortanaAboveLock" /t REG_DWORD /d "0" /f
-
-REM --> Disable search using location
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearchToUseLocation" /t REG_DWORD /d "0" /f
-echo Cortana has been disabled globally.
-
-
-REM Stop Xbox services and set their startup type to "demand"
-echo Stopping Xbox services and setting startup type...
-sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
-sc qc XblGameSave | findstr "STATE" | findstr "RUNNING" && sc stop XblGameSave
-sc qc XboxNetApiSvc | findstr "STATE" | findstr "RUNNING" && sc stop XboxNetApiSvc
-sc qc XboxGipSvc | findstr "STATE" | findstr "RUNNING" && sc stop XboxGipSvc
-sc qc xbgm | findstr "STATE" | findstr "RUNNING" && sc stop xbgm
-echo Stop Xbox services - Done...
-
-REM --> Set the startup type as automatic for the services: XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc and xbgm
-echo Setting the startup type of services as demand...
-set "services=XblAuthManager XblGameSave XboxNetApiSvc XboxGipSvc xbgm"
-
-REM --> Check and set startup type for each service
-for %%s in (%services%) do (
-    sc qc %%s | findstr "START_TYPE" | findstr /i "DEMAND" > nul
-    if errorlevel 1 (
-        sc config %%s start= demand
-        echo Startup type for %%s service set to demand.
-    ) else (
-        echo Startup type for %%s service is already set to demand.
-    )
-)
-echo Startup type set as demand for the services.
-
-
-echo Enabling Storage Sense
-REM --> Add DWORD value 01 to enable Storage Sense
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
-
-REM --> Add DWORD value 1024 to run Storage Sense
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
-
-echo Run storage sense every week
-REM --> Add DWORD value 2048 to run Storage Sense every week
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 2048 /t REG_DWORD /d 7 /f
-
-echo Set storage sense never delete downloads
-REM --> Add DWORD value 32 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 0 /f
-
-REM --> Add DWORD value 512 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 0 /f
-
-echo Set storagesense to empty recycle bin every 60days
-REM --> Add DWORD value 256 to empty recycle bin every 60 days
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
-echo Registry values added
-
-
-REM -->  set visual effect to custom
-echo Setting visual effects to Custom
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
-
-REM --> wanna set syste propterties performance options to optimal
-REM --> however, it doesnt i disable the following
-REM --> animation windows when minimasing/maximasing
-REM --> animate taskbar 
-REm --> Enable peak. 
-echo making performance changes to visual effects
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
-echo Registry values changed. 
-
-
-REM --> Add registry values to enable Processor Performance Boost Mode
-echo Adding registry values enable Processor Performance Boost Mode...
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
-
-REM --> Add registry values to see minimum and maximum processor states
-echo Adding registry values for minimum and maximum processor states...
-
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
-
-REM --> Set the current power scheme to the minimum processor state to 100% (plugged in)
-powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
-
-REM --> Set the current power scheme to the maximum processor state to 100% (plugged in)
-powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
-
-Powercfg -setactive SCHEME_CURRENT
-echo Registry values added and current power scheme updated.
 
 
 REM --> Remove Temporary Files
@@ -351,6 +253,12 @@ Sfc /ScanNow
 echo System cleanup and health checks have been completed.
 
 
+REM --> Start chkdsk utility and confirm with "yes"
+echo Initiating disk check (CHKDSK) and confirming with "yes"...
+echo y|chkdsk /r
+echo Disk check (CHKDSK) has been initiated.
+
+
 REM --> Start specified services
 echo Starting services...
 net start bits
@@ -358,6 +266,7 @@ net start wuauserv
 net start msiserver
 net start cryptsvc
 net start appidsvc
+
 
 REM --> Restarts computer
 echo Task completed successfully! - Press any key to reboot
