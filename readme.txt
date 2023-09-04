@@ -18,3 +18,29 @@ After that the chkdsk scan take about 20-30min.(depending on hardware)
 
 Support and Feedback
 For any questions, issues, or feedback related to this script, please reach out to https://github.com/rajtsic/WuFix/discussions
+
+
+### Main VS onlyWufix ####
+
+If onlyWufix script mainly does; 
+*check for admin - if not, make the script admin
+*restore point
+*delete temp files
+*reset bits
+*run DISM scan
+*run SFC scan
+*reboot 
+*run chkdsk scan
+This can result in fixing windows update issues if you have that, otherwise it just a good script to run.
+
+Main does more for "performance".
+The script is target for business and enterprise end-user computer.
+But can be used by any windows user.
+As of writing this readeMe.txt, Main script does what "onlyWuFix.cmd" script plus:
+*Stop and disable startup xbox services
+*Disable cortana (EOL anyway)
+*Enable - use printscreen button to open snipping tool
+*Enable storage sense and set basic config.
+*Setting a visual effect to costum for more "performance" 
+*Enable Processor performance boost mode - if you got the hardware.
+*Setting minimum & maximum processor state to 100% when plugged in.
