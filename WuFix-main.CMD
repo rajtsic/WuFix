@@ -126,12 +126,12 @@ if "%ERRORLEVEL%"=="0" (
 	REM ---> Terminating Teams
 	taskkill /f /im "ms-teams.exe"
 ) else (
-    tasklist /fi "imagename eq teams.exe" 2>NUL | find /i /n "teams.exe">NUL
+    tasklist /fi "imagename eq Teams.exe" 2>NUL | find /i /n "Teams.exe">NUL
     if "%ERRORLEVEL%"=="0" (
         echo Old Microsoft Teams is running.
 		echo Exiting Teams.
 		REM ---> Terminating Teams
-		taskkill /f /im "teams.exe"
+		taskkill /f /im "Teams.exe"
     ) else (
         echo Microsoft Teams is not running.
     )
