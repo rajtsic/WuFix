@@ -118,6 +118,31 @@ for %%s in (%services%) do (
 echo Startup type set as automatic for the services.
 
 
+REM ---> check if Teams and which Teams is running. 
+tasklist /fi "imagename eq ms-teams.exe" 2>NUL | find /i /n "ms-teams.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo New-Microsoft Teams is running.
+	echo Exiting Teams.
+	REM ---> Terminating Teams
+	taskkill /f /im "ms-teams.exe"
+) else (
+    tasklist /fi "imagename eq teams.exe" 2>NUL | find /i /n "teams.exe">NUL
+    if "%ERRORLEVEL%"=="0" (
+        echo Old Microsoft Teams is running.
+		echo Exiting Teams.
+		REM ---> Terminating Teams
+		taskkill /f /im "teams.exe"
+    ) else (
+        echo Microsoft Teams is not running.
+    )
+)
+REM ---> Deleting Teams cache
+echo Delting Teams cache
+del /s /f /q %appdata%\Microsoft\Teams\*.* 2> nul
+rmdir /s /q %appdata%\Microsoft\Teams 2> nul
+echo Teams cache deleted...
+
+
 REM --> Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
 sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
