@@ -43,15 +43,16 @@ echo If you do not agree, please close this window.
 
 
 :atYourOwnRisk
-set /p user_input=Are you sure you want to Proceed at your own risk? (y/n)
+set /p user_input=Are you sure you want to Proceed at your own risk? (y/n) 
 if /i "%user_input%"=="y" (
-    echo You chose to continue.
+    echo.
 ) else if /i "%user_input%"=="n" (
     echo You chose not to continue.
     pause >nul
 	exit
 ) else (
     echo Invalid input, try again.
+    echo.
     goto atYourOwnRisk
 )
 
@@ -61,21 +62,25 @@ echo Diffrent types of levels for the script
 echo 1. normal
 echo 2. only wufix script
 echo 3. I wanna decide everything myself
-set /p user_input=What will you choose?
+set /p user_input=What will you choose? 
 if /i "%user_input%"=="1" (
     echo You chose Normal.
     set "user_decision=normal"
+    echo.
 ) else if /i "%user_input%"=="2" (
     echo You chose only wufix.
     set "user_decision=wufix"
+    echo.
 ) else if /i "%user_input%"=="3" (
     echo You chose supersafe.
     echo This does nothing.. for now
     echo choose a other option.
+    echo.
     goto diffrentLevels
     REM set "user_decision=supersafe"
 ) else (
     echo Invalid input, try again.
+    echo.
     goto diffrentLevels
 )
 
