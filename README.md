@@ -1,53 +1,53 @@
+# Windows Optimization Script
 
+This script is designed to streamline various optimization tasks on a Windows system using native Windows commands. It simplifies tasks such as enabling system restore, configuring service startup types, disabling Cortana, halting Xbox-related services, adjusting power settings for enhanced performance, cleaning temporary files, and resetting Windows Update policies.
 
-This script is designed to automate various optimization tasks on a Windows system using built-in Windows commands. 
-It performs tasks such as enabling system restore, setting service startup types, disabling Cortana, stopping Xbox services, modifying power settings for more power, cleaning temporary files, resetting Windows Update policies. 
+## Usage
 
-Double-Click to Run: Thanks to NicoKnowsTech - https://github.com/NicoKnowsTech - The script will automatically request and acquire administrative rights at the beginning.
-Then let the script run. 
+**Option 1: Double-Click to Run**
 
-Or for ease of use, paste one of the following script row into a command promt to run the said script
-what it does; the scripts download the github raw into ~/Downloads and start it.
+Thanks to [NicoKnowsTech](https://github.com/NicoKnowsTech), the script will automatically request and acquire administrative rights at the beginning. Simply double-click on the script file, and let it run.
 
+**Option 2: Command Prompt**
+
+For added convenience, you can also run the script from the command prompt. Use one of the following commands to execute the script:
+
+```shell
 curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > ./Downloads/WuFix-main.CMD | start .\Downloads\Wufix-Main.CMD
 
 
-### Normal VS onlyWufix ####
+Normal vs. onlyWufix
 
-If onlyWufix script mainly does; 
-*check for admin - if not, make the script admin
-*restore point
-*delete temp files
-*reset bits
-*run DISM scan
-*run SFC scan
-*reboot 
-*run chkdsk scan
-This can result in fixing windows update issues if you have that, otherwise it just a good script to run.
+The script comes in two flavors: "Normal" and "onlyWufix."
 
-Main does more for "performance".
-The script is target for business and enterprise end-user computer.
-But can be used by any windows user.
-As of writing this readeMe.txt, Main script does what "onlyWuFix.cmd" script plus:
-*Stop and disable startup xbox services
-*Disable cortana (EOL anyway)
-*Enable - use printscreen button to open snipping tool
-*Enable storage sense and set basic config.
-*Setting a visual effect to costum for more "performance" 
-*Enable Processor performance boost mode - if you got the hardware.
-*Setting minimum & maximum processor state to 100% when plugged in.
+onlyWufix mainly performs the following tasks:
 
+    Checks for admin rights; elevates permissions if necessary.
+    Creates a system restore point.
+    Deletes temporary files.
+    Resets BITS (Background Intelligent Transfer Service).
+    Runs DISM (Deployment Imaging Service and Management Tool) scan.
+    Executes SFC (System File Checker) scan.
+    Reboots the system.
+    Runs a chkdsk scan.
 
-Important Notes:
-This script involves making significant changes to your system settings, services, and configurations. 
-Use it only if you are confident in its effects.
+This script can effectively resolve Windows update issues and serves as a general system maintenance tool.
 
-Runtime: The script may take some time to complete, depending on your system's specifications and the tasks being performed.
-Takes about 20-30min run it within CMD (depending on hardware)
-Script ask to reboot.
-After that the chkdsk scan take about 20-30min.(depending on hardware)
+Normal does more for system performance. It targets business and enterprise end-user computers but can be used by any Windows user. In addition to the "onlyWufix.cmd" tasks, the "Normal" script also:
 
+    Stops and disables startup Xbox-related services.
+    Disables Cortana (End of Life).
+    Enables the use of the Print Screen button to open the Snipping Tool.
+    Enables Storage Sense and configures basic settings.
+    Customizes visual effects for enhanced performance.
+    Enables Processor Performance Boost mode (if compatible hardware is present).
+    Sets minimum and maximum processor states to 100% when plugged in.
+
+Important Notes
+
+This script makes significant changes to your system settings, services, and configurations. Only use it if you are confident in its effects.
+
+Runtime: The script may take some time to complete, depending on your system's specifications and the tasks being performed. On average, it takes about 20-30 minutes to run within CMD (duration varies based on hardware). The script may prompt you to reboot, and after that, the chkdsk scan can take an additional 20-30 minutes (hardware-dependent).
 Support and Feedback
-For any questions, issues, or feedback related to this script, please reach out to https://github.com/rajtsic/WuFix/discussions
 
-
+For any questions, issues, or feedback related to this script, please visit the GitHub Discussions page.
