@@ -1,9 +1,0 @@
-
-## For ease of use, paste one of the following script row into a command promt to run the said script ## 
-what it does; the scripts download the github raw into ~/Downloads and start it.
-
-1. For Wufix-main;
-curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > ./Downloads/WuFix-main.CMD | start .\Downloads\Wufix-Main.CMD
-
-2. For Wufix-onlyWuFix;
-curl https://raw.githubusercontent.com/rajtsic/WuFix/main/Wufix-onlyWuFix.CMD > ./Downloads/Wufix-onlyWuFix.CMD | start .\Downloads\Wufix-onlyWuFix.CMD
