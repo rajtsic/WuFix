@@ -51,3 +51,7 @@ Runtime: The script may take some time to complete, depending on your system's s
 Support and Feedback
 
 For any questions, issues, or feedback related to this script, please visit the GitHub Discussions page.
+
+Support and Feedback
+
+For any questions, issues, or feedback related to this script, please visit the GitHub Discussions page.
