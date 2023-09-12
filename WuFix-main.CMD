@@ -117,6 +117,8 @@ for %%s in (%services%) do (
 )
 echo Startup type set as automatic for the services.
 
+REM ---> try to update office if possible
+"C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeC2RClient.exe" /update user
 
 REM ---> Check if New Microsoft Teams is running
 :checkNewTeams
