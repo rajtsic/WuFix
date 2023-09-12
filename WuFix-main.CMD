@@ -51,7 +51,7 @@ if /i "%user_input%"=="y" (
     pause >nul
 	exit
 ) else (
-    echo Invalid input. Exiting script. 
+    echo Invalid input, try again.
     goto userInput
 )
 
@@ -155,7 +155,7 @@ if "%ERRORLEVEL%"=="0" (
     taskkill /f /im "Teams.exe"
     goto checkOldTeams
 )
-echo Microsoft Old eams is not running.
+echo Microsoft Old Teams is not running.
 
 
 REM ---> Deleting Teams cache
