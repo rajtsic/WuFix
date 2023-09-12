@@ -57,10 +57,10 @@ if /i "%user_input%"=="y" (
 )
 
 
-:diffrentLevels
-echo Diffrent types of levels for the script
-echo 1. normal
-echo 2. only wufix script
+:differentLevels
+echo Different types of levels for the script
+echo 1. Windows update fix + among other good things.
+echo 2. Only Windows update fix script.
 echo 3. I wanna decide everything myself
 set /p user_input=What will you choose? 
 if /i "%user_input%"=="1" (
@@ -76,12 +76,12 @@ if /i "%user_input%"=="1" (
     echo This does nothing.. for now
     echo choose a other option.
     echo.
-    goto diffrentLevels
+    goto differentLevels
     REM set "user_decision=supersafe"
 ) else (
     echo Invalid input, try again.
     echo.
-    goto diffrentLevels
+    goto differentLevels
 )
 
 
