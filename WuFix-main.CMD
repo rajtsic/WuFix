@@ -40,8 +40,21 @@ echo DISCLAIMER: This open-source script automates common IT tasks using built-i
 echo It does not rely on third-party applications or tools. 
 echo By using this tool, you accept sole responsibility for any potential damage. 
 echo If you do not agree, please close this window. 
-echo Proceed at your own risk. - Press any key to continue
-pause >nul
+
+
+:userInput
+set /p user_input=Are you sure you want to Proceed at your own risk? (y/n)
+if /i "%user_input%"=="y" (
+    echo You chose to continue.
+) else if /i "%user_input%"=="n" (
+    echo You chose not to continue.
+    pause >nul
+	exit
+) else (
+    echo Invalid input. Exiting script. 
+    goto userInput
+)
+
 
 REM --> Check if restore is enabled and enable it if not
 echo Checking if restore is enabled
