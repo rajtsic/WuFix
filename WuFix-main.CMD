@@ -118,24 +118,31 @@ for %%s in (%services%) do (
 echo Startup type set as automatic for the services.
 
 
-REM ---> check if Teams and which Teams is running. 
+REM ---> Check if New Microsoft Teams is running
+:checkNewTeams
 tasklist /fi "imagename eq ms-teams.exe" 2>NUL | find /i /n "ms-teams.exe">NUL
 if "%ERRORLEVEL%"=="0" (
-    echo New-Microsoft Teams is running.
-	echo Exiting Teams.
-	REM ---> Terminating Teams
-	taskkill /f /im "ms-teams.exe"
-) else (
-    tasklist /fi "imagename eq Teams.exe" 2>NUL | find /i /n "Teams.exe">NUL
-    if "%ERRORLEVEL%"=="0" (
-        echo Old Microsoft Teams is running.
-		echo Exiting Teams.
-		REM ---> Terminating Teams
-		taskkill /f /im "Teams.exe"
-    ) else (
-        echo Microsoft Teams is not running.
-    )
+    echo New Microsoft Teams is running.
+    echo Exiting New Microsoft Teams.
+    REM ---> Terminate New Microsoft Teams
+    taskkill /f /im "ms-teams.exe"
+    goto checkNewTeams
 )
+echo Microsoft New eams is not running.
+
+REM ---> Check if Old Microsoft Teams is running
+:checkOldTeams
+tasklist /fi "imagename eq Teams.exe" 2>NUL | find /i /n "Teams.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo Old Microsoft Teams is running.
+    echo Exiting Old Microsoft Teams.
+    REM ---> Terminate Old Microsoft Teams
+    taskkill /f /im "Teams.exe"
+    goto checkOldTeams
+)
+echo Microsoft Old eams is not running.
+
+
 REM ---> Deleting Teams cache
 echo Delting Teams cache
 del /s /f /q %appdata%\Microsoft\Teams\*.* 2> nul
