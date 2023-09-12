@@ -14,7 +14,7 @@ For added convenience, you can also run the script from the command prompt. Use 
 
 ```shell
 curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > ./Downloads/WuFix-main.CMD | start .\Downloads\Wufix-Main.CMD
-
+```
 
 Normal vs. onlyWufix
 
