@@ -78,6 +78,7 @@ The script may take some time to complete, depending on your system's specificat
 
 ## Support and Feedback
 
-For any questions, issues, or feedback related to this script, please visit the GitHub Discussions page. Your feedback is valuable in improving this script for the community.
+For any questions, issues, or feedback related to this script, please visit the [GitHub Discussions page](https://github.com/rajtsic/WuFix/discussions). Your feedback is valuable in improving this script for the community.
 
 Enjoy an optimized Windows experience! 🚀
+
