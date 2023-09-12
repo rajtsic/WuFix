@@ -42,7 +42,7 @@ echo By using this tool, you accept sole responsibility for any potential damage
 echo If you do not agree, please close this window. 
 
 
-:userInput
+:atYourOwnRisk
 set /p user_input=Are you sure you want to Proceed at your own risk? (y/n)
 if /i "%user_input%"=="y" (
     echo You chose to continue.
@@ -52,7 +52,31 @@ if /i "%user_input%"=="y" (
 	exit
 ) else (
     echo Invalid input, try again.
-    goto userInput
+    goto atYourOwnRisk
+)
+
+
+:diffrentLevels
+echo Diffrent types of levels for the script
+echo 1. normal
+echo 2. only wufix script
+echo 3. I wanna decide everything myself
+set /p user_input=What will you choose?
+if /i "%user_input%"=="1" (
+    echo You chose Normal.
+    set "user_decision=normal"
+) else if /i "%user_input%"=="2" (
+    echo You chose only wufix.
+    set "user_decision=wufix"
+) else if /i "%user_input%"=="3" (
+    echo You chose supersafe.
+    echo This does nothing.. for now
+    echo choose a other option.
+    goto diffrentLevels
+    REM set "user_decision=supersafe"
+) else (
+    echo Invalid input, try again.
+    goto diffrentLevels
 )
 
 
@@ -85,7 +109,7 @@ echo Remaining time: !remainingTime! seconds
 if !remainingTime! gtr 0 (
     goto wait
 ) else (
-    echo Restore may be completed. Proceeding with the script
+    echo Restore may be completed. Proceeding with the script..
 )
 
 
@@ -106,6 +130,7 @@ echo y|net stop cryptsvc
 echo Stopping Application Identity Service...
 echo y|net stop appidsvc
 echo Services stopped successfully.
+
 
 REM --> Reset Winsock configuration to default settings
 echo Resetting Winsock configuration to default settings...
@@ -130,6 +155,12 @@ for %%s in (%services%) do (
 )
 echo Startup type set as automatic for the services.
 
+
+if /i "%user_decision%"=="wufix" (
+    goto wuFixOnly
+) 
+
+
 REM ---> try to update office if possible
 "C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeC2RClient.exe" /update user
 
@@ -143,7 +174,7 @@ if "%ERRORLEVEL%"=="0" (
     taskkill /f /im "ms-teams.exe"
     goto checkNewTeams
 )
-echo Microsoft New eams is not running.
+echo Microsoft New Teams is not running.
 
 REM ---> Check if Old Microsoft Teams is running
 :checkOldTeams
@@ -270,6 +301,9 @@ powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
 
 Powercfg -setactive SCHEME_CURRENT
 echo Registry values added and current power scheme updated.
+
+
+:wuFixOnly
 
 
 REM --> Remove Temporary Files
