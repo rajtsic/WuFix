@@ -152,6 +152,12 @@ rmdir /s /q %appdata%\Microsoft\Teams 2> nul
 echo Teams cache deleted...
 
 
+REM ---> Deleting Outlook cache
+echo Delting Outlook cache
+del /s /f /q %localappdata%\Microsoft\Outlook\RoamCache*.* 2> nul
+rmdir /s /q %localappdata%\Microsoft\Outlook\RoamCache 2> nul
+echo Outlook cache deleted...
+
 REM --> Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
 sc qc XblAuthManager | findstr "STATE" | findstr "RUNNING" && sc stop XblAuthManager
