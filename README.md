@@ -14,6 +14,7 @@ Welcome to the Windows Optimization Script! This script is designed to simplify 
 - [Important Notes](#important-notes)
 - [Runtime](#runtime)
 - [Support and Feedback](#support-and-feedback)
+- [Acknowledgments](#Acknowledgments)
 
 ## Introduction
 
@@ -85,3 +86,10 @@ For any questions, issues, or feedback related to this script, please visit the 
 
 Enjoy an optimized Windows experience! 🚀
 
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+
+* [NicoKnowsTech and the NKT_tool project](https://github.com/NicoKnowsTech/NicoKnowsTech)
+* [bmrf and the Tron project](https://github.com/bmrf/tron)
