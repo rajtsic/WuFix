@@ -6,8 +6,8 @@ Welcome to the Windows Optimization Script! This script is designed to simplify 
 
 - [Introduction](#introduction)
 - [Usage](#usage)
-  - [Option 1: Double-Click to Run](#option-1-double-click-to-run)
-  - [Option 2: Command Prompt](#option-2-command-prompt)
+  - [Option 1: Ease of with Command Prompt(CMD)](Option-1:-Ease-of-with-Command-Prompt(CMD))
+  - [Option 2: Double-Click to Run](#option-2-double-click-to-run)
 - [Script Variants](#script-variants)
   - [onlyWufix](#onlywufix)
   - [Normal](#normal)
