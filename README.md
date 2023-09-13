@@ -93,3 +93,4 @@ Use this space to list resources you find helpful and would like to give credit 
 
 * [NicoKnowsTech and the NKT_tool project](https://github.com/NicoKnowsTech/NicoKnowsTech)
 * [bmrf and the Tron project](https://github.com/bmrf/tron)
+* [othneildrew and the Best-README-Template project](https://github.com/othneildrew/Best-README-Template) 
