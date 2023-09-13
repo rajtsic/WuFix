@@ -21,21 +21,23 @@ This script simplifies a variety of optimization tasks for your Windows system. 
 
 ## Usage
 
-### Option 1: Double-Click to Run
+### Option 1: Ease of with Command Prompt(CMD)
 
-Thanks to [NicoKnowsTech](https://github.com/NicoKnowsTech), the script is designed to automatically request and acquire administrative rights at the beginning. To run the script, simply follow these steps:
+Most ease of use, copy the following command, open cmd, copy the following command and paste it into cmd and press enter - et voilà!:
+
+```shell
+curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > ./Downloads/WuFix-main.CMD | start .\Downloads\Wufix-Main.CMD
+```
+
+### Option 2: Double-Click to Run
+
+The script is designed to automatically request and acquire administrative rights at the beginning. To run the script, simply follow these steps:
 
 1. **Download the Script:** Download the script file to your computer.
 
 2. **Double-Click to Run:** Locate the downloaded script file and double-click on it. The script will automatically request and acquire administrative rights and proceed with optimization tasks.
 
-### Option 2: Command Prompt
 
-For advanced users who prefer using the command prompt, you can also run the script from there. Use the following command to execute the script:
-
-```shell
-curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > ./Downloads/WuFix-main.CMD | start .\Downloads\Wufix-Main.CMD
-```
 
 ## Script Variants
 
@@ -74,7 +76,8 @@ This script makes significant changes to your system settings, services, and con
 
 ## Runtime
 
-The script may take some time to complete, depending on your system's specifications and the tasks being performed. On average, it takes about 20-30 minutes to run within CMD (duration varies based on hardware). The script may prompt you to reboot, and after that, the chkdsk scan can take an additional 20-30 minutes (hardware-dependent).
+The script may take some time to complete, depending on your system's hardware and the tasks being performed. On average, it takes about 20-30 minutes to run within CMD. 
+The script will prompt you to reboot, and after that, the chkdsk scan can take an additional 20-30 minutes or even longer.
 
 ## Support and Feedback
 
