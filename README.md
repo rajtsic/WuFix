@@ -6,7 +6,7 @@ Welcome to the Windows Optimization Script! This script is designed to simplify 
 
 - [Introduction](#introduction)
 - [Usage](#usage)
-  - [Option 1: Ease of use with single copy paste via Command Prompt (CMD)](#option-1-ease-of-use-with-command-prompt-(cmd))
+  - [Option 1: Ease of use with single copy paste via Command Prompt (CMD)](#option-1-ease-of-use)
   - [Option 2: Double-Click to Run](#option-2-double-click-to-run)
 - [Script Variants](#script-variants)
   - [onlyWufix](#onlywufix)
@@ -22,7 +22,7 @@ This script simplifies a variety of optimization tasks for your Windows system. 
 
 ## Usage
 
-### Option 1: Ease of use with Command Prompt (CMD)
+### Option 1: Ease of use
 
 Most ease of use, copy the following command, open cmd, copy the following command and paste it into cmd and press enter - et voilà!:
 
