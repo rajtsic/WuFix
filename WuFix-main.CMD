@@ -84,6 +84,9 @@ if /i "%user_input%"=="1" (
     goto differentLevels
 )
 
+REM --> Just go to C: drive, some start cmd in other drives for some reason. 
+cd C:\
+
 
 REM --> Check if restore is enabled and enable it if not
 echo Checking if restore is enabled
