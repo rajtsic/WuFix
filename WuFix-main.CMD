@@ -8,6 +8,10 @@ REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/r
 REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/clean-up-the-winsxs-folder?view=windows-11
 
 
+REM --> Just go to C: drive, some start cmd in other drives for some reason. 
+cd C:\
+
+
 REM --> Check for permissions and gain admin privileges
     IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
 >nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
@@ -34,6 +38,25 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 REM -------------------- from this point we are admin -------------------->
+
+REM ---> checking if the user uses windows 10 or windows 11, works on both windows 10
+for /f "delims=" %%G in ('systeminfo ^| find "OS Name"') do set "OS_NAME=%%G"
+echo %OS_NAME% | findstr /i /c:"Windows 11" /c:"Windows 10" > nul
+if %errorlevel% equ 0 (
+    if not "%OS_NAME%"=="%OS_NAME:*Windows 11=%" (
+        echo Your operating system is Windows 11
+		set "windowsOS=win11"
+    ) else if not "%OS_NAME%"=="%OS_NAME:*Windows 10=%" (
+        echo Your operating system is Windows 10
+		set "windowsOS=win10"
+    ) else (
+        echo Unknown OS - %OS_NAME%
+		echo Cannot find OS - make a post witch screenshot in @ https://github.com/rajtsic/WuFix/issues
+        echo Press anykey to exit.
+		pause >nul
+		exit
+    )
+)
 
 
 echo DISCLAIMER: This open-source script automates common IT tasks using built-in Windows commands. 
@@ -77,15 +100,15 @@ if /i "%user_input%"=="1" (
     echo choose a other option.
     echo.
     goto differentLevels
-    REM set "user_decision=supersafe"
+    REM---> set "user_decision=supersafe"
 ) else (
     echo Invalid input, try again.
     echo.
     goto differentLevels
 )
 
-REM --> Just go to C: drive, some start cmd in other drives for some reason. 
-cd C:\
+
+REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> for all including wufix  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 REM --> Check if restore is enabled and enable it if not
@@ -104,21 +127,13 @@ echo Starting a restore point...
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -Command ""Checkpoint-Computer -Description \""PreWufix\"" -RestorePointType \""MODIFY_SETTINGS\""; Start-Sleep -Seconds 2; Exit""' -Verb RunAs}"
 
 
-REM --> Wait for the restore point to be completed
-setlocal enabledelayedexpansion
-REM --> SET time default to 30sec, 
-REM --> However it could take longer so set it higher if you think you need it. 
-set "remainingTime=30"
+REM Wait for the restore point to be completed
 echo Timer for the restore point to be completed...
-:wait
-timeout /t 1 >nul
-set /a "remainingTime-=1"
-echo Remaining time: !remainingTime! seconds
-if !remainingTime! gtr 0 (
-    goto wait
-) else (
-    echo Restore may be completed. Proceeding with the script..
+for /l %%i in (30,-1,1) do (
+    timeout /t 1 >nul
+    echo Remaining time: %%i seconds
 )
+echo Restore may be completed. Proceeding with the script..
 
 
 REM --> Stop specified services
@@ -163,52 +178,13 @@ for %%s in (%services%) do (
 )
 echo Startup type set as automatic for the services.
 
-
+REM ---> if user choose only wufix, we will jump over to only wufix part. 
 if /i "%user_decision%"=="wufix" (
     goto wuFixOnly
 ) 
 
+REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> works on windows 10 and windows 11 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-REM ---> try to update office if possible
-"C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeC2RClient.exe" /update user
-
-REM ---> Check if New Microsoft Teams is running
-:checkNewTeams
-tasklist /fi "imagename eq ms-teams.exe" 2>NUL | find /i /n "ms-teams.exe">NUL
-if "%ERRORLEVEL%"=="0" (
-    echo New Microsoft Teams is running.
-    echo Exiting New Microsoft Teams.
-    REM ---> Terminate New Microsoft Teams
-    taskkill /f /im "ms-teams.exe"
-    goto checkNewTeams
-)
-echo Microsoft New Teams is not running.
-
-REM ---> Check if Old Microsoft Teams is running
-:checkOldTeams
-tasklist /fi "imagename eq Teams.exe" 2>NUL | find /i /n "Teams.exe">NUL
-if "%ERRORLEVEL%"=="0" (
-    echo Old Microsoft Teams is running.
-    echo Exiting Old Microsoft Teams.
-    REM ---> Terminate Old Microsoft Teams
-    taskkill /f /im "Teams.exe"
-    goto checkOldTeams
-)
-echo Microsoft Old Teams is not running.
-
-
-REM ---> Deleting Teams cache
-echo Delting Teams cache
-del /s /f /q %appdata%\Microsoft\Teams\*.* 2> nul
-rmdir /s /q %appdata%\Microsoft\Teams 2> nul
-echo Teams cache deleted...
-
-
-REM ---> Deleting Outlook cache
-echo Delting Outlook cache
-del /s /f /q %localappdata%\Microsoft\Outlook\RoamCache*.* 2> nul
-rmdir /s /q %localappdata%\Microsoft\Outlook\RoamCache 2> nul
-echo Outlook cache deleted...
 
 REM --> Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
@@ -249,6 +225,84 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearc
 echo Cortana has been disabled globally.
 
 
+REM --> Add registry values to enable Processor Performance Boost Mode - some computer is not compatible with this, and will not enable this.
+echo Adding registry values enable Processor Performance Boost Mode...
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostValue" /t REG_DWORD /d 0x3 /f
+
+REM --> Add registry values to see minimum and maximum processor states - some computer is not compatible with this, and will not enable this.
+echo Adding registry values for minimum and maximum processor states...
+
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
+
+REM ---> Set the current power scheme to the minimum processor state to 100% (plugged in) - some computer is not compatible with this, and will not enable this.
+powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
+
+REM ---> Set the current power scheme to the maximum processor state to 100% (plugged in) - some computer is not compatible with this, and will not enable this.
+powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
+
+Powercfg -setactive SCHEME_CURRENT
+echo Registry values added and current power scheme updated.
+
+
+REM --> wanna set syste propterties performance options to optimal
+REM --> however, it doesnt i disable the following
+REM --> Animation windows when minimising/maximising
+REM --> Animate taskbar 
+REM --> Enable peak. 
+echo making performance changes to visual effects
+reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
+echo Registry values changed. 
+
+REM -->  set visual effect to custom
+echo Setting visual effects to Custom
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
+
+
+REM ---> Check if New Microsoft Teams is running
+:checkNewTeams
+tasklist /fi "imagename eq ms-teams.exe" 2>NUL | find /i /n "ms-teams.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo New Microsoft Teams is running.
+    echo Exiting New Microsoft Teams.
+    REM ---> Terminate New Microsoft Teams
+    taskkill /f /im "ms-teams.exe"
+    goto checkNewTeams
+)
+echo Microsoft New Teams is not running.
+
+REM ---> Check if Old Microsoft Teams is running
+:checkOldTeams
+tasklist /fi "imagename eq Teams.exe" 2>NUL | find /i /n "Teams.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo Old Microsoft Teams is running.
+    echo Exiting Old Microsoft Teams.
+    REM ---> Terminate Old Microsoft Teams
+    taskkill /f /im "Teams.exe"
+    goto checkOldTeams
+)
+echo Microsoft Old Teams is not running.
+
+
+REM ---> Deleting Teams cache
+echo Delting Teams cache
+del /s /f /q %appdata%\Microsoft\Teams\*.* 2> nul
+rmdir /s /q %appdata%\Microsoft\Teams 2> nul
+echo Teams cache deleted...
+
+
+REM ---> Deleting Outlook cache
+echo Delting Outlook cache
+del /s /f /q %localappdata%\Microsoft\Outlook\RoamCache*.* 2> nul
+rmdir /s /q %localappdata%\Microsoft\Outlook\RoamCache 2> nul
+echo Outlook cache deleted...
+
+
+REM ---> try to update office if possible
+"C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeC2RClient.exe" /update user
+
+
 REM --> Enable, use printscreen to open snipping tool
 reg add "HKCU\Control Panel\Keyboard" /v "PrintScreenKeyForSnippingEnabled" /t REG_DWORD /d 1 /f
 
@@ -266,10 +320,10 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\
 
 echo Set storage sense never delete downloads
 REM --> Add DWORD value 32 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 1 /f
 
 REM --> Add DWORD value 512 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 60 /f
 
 echo Set storagesense to empty recycle bin every 60days
 REM --> Add DWORD value 256 to empty recycle bin every 60 days
@@ -277,42 +331,25 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\
 echo Registry values added
 
 
-REM -->  set visual effect to custom
-echo Setting visual effects to Custom
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
+REM --->if /i "%windowsOS%"=="win11" (
+REM --->    goto win11
+REM --->) 
+REM ---> ready to use if if we find problems with win 11
 
-REM --> wanna set syste propterties performance options to optimal
-REM --> however, it doesnt i disable the following
-REM --> Animation windows when minimising/maximising
-REM --> Animate taskbar 
-REm --> Enable peak. 
-echo making performance changes to visual effects
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
-echo Registry values changed. 
+REM --->if /i "%windowsOS%"=="win10" (
+REM --->    goto win10
+REM --->) 
+REM ---> ready to use if if we find problems with win 10
 
+REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> for windows 11 only <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+REM ---> everything is tested in windows 10 2023-09-29
 
-REM --> Add registry values to enable Processor Performance Boost Mode
-echo Adding registry values enable Processor Performance Boost Mode...
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
-
-REM --> Add registry values to see minimum and maximum processor states
-echo Adding registry values for minimum and maximum processor states...
-
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
-
-REM --> Set the current power scheme to the minimum processor state to 100% (plugged in)
-powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
-
-REM --> Set the current power scheme to the maximum processor state to 100% (plugged in)
-powercfg.exe -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
-
-Powercfg -setactive SCHEME_CURRENT
-echo Registry values added and current power scheme updated.
+REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> for windows 10 only <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+REM ---> everything is tested in windows 11 2023-09-29
 
 
+REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WuFix only from here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 :wuFixOnly
-
 
 REM --> Remove Temporary Files
 REM --> Deletes temporary files from the Windows system directories
