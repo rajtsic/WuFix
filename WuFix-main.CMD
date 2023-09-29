@@ -184,7 +184,7 @@ if /i "%user_decision%"=="wufix" (
 ) 
 
 REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> works on windows 10 and windows 11 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
+REM ---> everything is tested in windows 10 and windows 11 - 2023-09-29
 
 REM --> Stop Xbox services and set their startup type to "demand"
 echo Stopping Xbox services and setting startup type...
@@ -342,10 +342,10 @@ REM --->)
 REM ---> ready to use if if we find problems with win 10
 
 REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> for windows 11 only <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-REM ---> everything is tested in windows 10 2023-09-29
+
 
 REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> for windows 10 only <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-REM ---> everything is tested in windows 11 2023-09-29
+
 
 
 REM --->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> WuFix only from here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
