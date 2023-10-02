@@ -19,7 +19,7 @@ REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
     REM --> Retrieve SID value of the default none admin user, storing it in TXT file.
     for /f %%G in ('powershell -Command "(New-Object System.Security.Principal.NTAccount('%USERNAME%')).Translate([System.Security.Principal.SecurityIdentifier]).Value"') do (
-        echo %%G > sidtemp.txt
+        echo %%G > "%~dp0sidtemp.txt"
     )
     echo Requesting administrative privileges...
     goto UACPrompt
@@ -40,11 +40,11 @@ CD /D "%~dp0"
 REM -------------------- from this point we are admin --------------------
 
 REM --> Retrieve the value of SID from the sidtemp.txt file
-set /p SID=<sidtemp.txt
+set /p SID=<"%~dp0sidtemp.txt"
 REM --> The SID value have a space in it, remove this space.
 set "SID=%SID:~0,-1%"
 REM --> feeling cute might delete later.
-del sidtemp.txt
+del "%~dp0sidtemp.txt"
 
 
 
