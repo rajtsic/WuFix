@@ -42,7 +42,7 @@ REM -------------------- from this point we are admin --------------------
 REM --> Retrieve the value of SID from the sidtemp.txt file
 set /p SID=<sidtemp.txt
 REM --> The SID value have a space in it, remove this space.
-set "SID=%SID:~0,-1%
+set "SID=%SID:~0,-1%"
 REM --> feeling cute might delete later.
 del sidtemp.txt
 
