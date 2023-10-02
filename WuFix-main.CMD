@@ -246,7 +246,7 @@ REM --> Add registry values to see minimum and maximum processor states - some c
 echo Adding registry values for minimum and maximum processor states...
 
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v Attributes /t REG_DWORD /d 2 /f
-reg add" HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec" /v Attributes /t REG_DWORD /d 2 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec" /v Attributes /t REG_DWORD /d 2 /f
 
 REM ---> Set the current power scheme to the minimum processor state to 100% (plugged in) - some computer is not compatible with this, and will not enable this.
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
@@ -298,14 +298,14 @@ echo Microsoft Old Teams is not running.
 
 
 REM ---> Deleting Teams cache
-echo Delting Teams cache
+echo Deleting Teams cache
 del /s /f /q %appdata%\Microsoft\Teams\*.* 2> nul
 rmdir /s /q %appdata%\Microsoft\Teams 2> nul
 echo Teams cache deleted...
 
 
 REM ---> Deleting Outlook cache
-echo Delting Outlook cache
+echo Deleting Outlook cache
 del /s /f /q %localappdata%\Microsoft\Outlook\RoamCache*.* 2> nul
 rmdir /s /q %localappdata%\Microsoft\Outlook\RoamCache 2> nul
 echo Outlook cache deleted...
