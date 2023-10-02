@@ -8,46 +8,46 @@ REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/r
 REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/clean-up-the-winsxs-folder?view=windows-11
 
 
-REM --> Just go to C: drive, some start cmd in other drives for some reason. 
-cd C:\
-
-REM --> Getting SID from current user before we make us admin, store it as veriable %SID%
-for /f %%G in ('powershell -Command "(New-Object System.Security.Principal.NTAccount('%USERNAME%')).Translate([System.Security.Principal.SecurityIdentifier]).Value"') do (
-    set "SID=%%G"
-)
-echo %SID% > SIDtemp.txt
-
-
-REM --> Check for permissions and gain admin privileges
-    IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
->nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
+REM Check for permissions and gain admin privileges
+IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
+    >nul 2>&1 "%SYSTEMROOT%\SysWOW64\cacls.exe" "%SYSTEMROOT%\SysWOW64\config\system"
 ) ELSE (
->nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+    >nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
 )
 
-REM --> If error flag set, we do not have admin.
+REM If error flag set, we do not have admin privileges
 if '%errorlevel%' NEQ '0' (
+    REM Retrieve the SID value using PowerShell and store it in a temporary file
+    for /f %%G in ('powershell -Command "(New-Object System.Security.Principal.NTAccount('%USERNAME%')).Translate([System.Security.Principal.SecurityIdentifier]).Value"') do (
+        echo %%G > sidtemp.txt
+    )
     echo Requesting administrative privileges...
     goto UACPrompt
 ) else ( goto gotAdmin )
 
 :UACPrompt
-    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
-    set params= %*
-    echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+REM Create a VBScript to prompt for UAC elevation
+echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+set params= %*
+echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
 
-    "%temp%\getadmin.vbs"
-    del "%temp%\getadmin.vbs"
-    exit /B
+REM Run the VBScript to prompt for UAC elevation
+"%temp%\getadmin.vbs"
+del "%temp%\getadmin.vbs"
+exit /B
 
 :gotAdmin
-    pushd "%CD%"
-    CD /D "%~dp0"
-REM -------------------- from this point we are admin -------------------->
+pushd "%CD%"
+CD /D "%~dp0"
+REM -------------------- From this point, we have admin privileges --------------------
 
-for /f %%G in (SIDtemp.txt) do set "SID=%%G"
-del SIDtemp.txt
+REM Retrieve the value of SID from the sidtemp.txt file
+set /p SID=<sidtemp.txt
+del sidtemp.txt
 
+
+REM --> Just go to C: drive, some start cmd in other drives for some reason. 
+cd C:\
 
 REM ---> checking if the user uses windows 10 or windows 11, works on both windows 10
 for /f "delims=" %%G in ('systeminfo ^| find "OS Name"') do set "OS_NAME=%%G"
