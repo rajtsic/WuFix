@@ -15,6 +15,8 @@ REM --> Getting SID from current user before we make us admin, store it as veria
 for /f %%G in ('powershell -Command "(New-Object System.Security.Principal.NTAccount('%USERNAME%')).Translate([System.Security.Principal.SecurityIdentifier]).Value"') do (
     set "SID=%%G"
 )
+echo %SID% > SIDtemp.txt
+
 
 REM --> Check for permissions and gain admin privileges
     IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
@@ -42,6 +44,10 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 REM -------------------- from this point we are admin -------------------->
+
+for /f %%G in (SIDtemp.txt) do set "SID=%%G"
+del SIDtemp.txt
+
 
 REM ---> checking if the user uses windows 10 or windows 11, works on both windows 10
 for /f "delims=" %%G in ('systeminfo ^| find "OS Name"') do set "OS_NAME=%%G"
