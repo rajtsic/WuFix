@@ -11,6 +11,10 @@ REM --> https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/c
 REM --> Just go to C: drive, some start cmd in other drives for some reason. 
 cd C:\
 
+REM --> Getting SID from current user before we make us admin, store it as veriable %SID%
+for /f %%G in ('powershell -Command "(New-Object System.Security.Principal.NTAccount('%USERNAME%')).Translate([System.Security.Principal.SecurityIdentifier]).Value"') do (
+    set "SID=%%G"
+)
 
 REM --> Check for permissions and gain admin privileges
     IF "%PROCESSOR_ARCHITECTURE%" EQU "amd64" (
@@ -227,14 +231,14 @@ echo Cortana has been disabled globally.
 
 REM --> Add registry values to enable Processor Performance Boost Mode - some computer is not compatible with this, and will not enable this.
 echo Adding registry values enable Processor Performance Boost Mode...
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostValue" /t REG_DWORD /d 0x3 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostValue" /t REG_DWORD /d 0x3 /f
 
 REM --> Add registry values to see minimum and maximum processor states - some computer is not compatible with this, and will not enable this.
 echo Adding registry values for minimum and maximum processor states...
 
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c /v Attributes /t REG_DWORD /d 2 /f
-reg add HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec /v Attributes /t REG_DWORD /d 2 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\893dee8e-2bef-41e0-89c6-b55d0929964c" /v Attributes /t REG_DWORD /d 2 /f
+reg add" HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\bc5038f7-23e0-4960-96da-33abaf5935ec" /v Attributes /t REG_DWORD /d 2 /f
 
 REM ---> Set the current power scheme to the minimum processor state to 100% (plugged in) - some computer is not compatible with this, and will not enable this.
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
@@ -252,12 +256,12 @@ REM --> Animation windows when minimising/maximising
 REM --> Animate taskbar 
 REM --> Enable peak. 
 echo making performance changes to visual effects
-reg add "HKCU\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
+reg add "HKEY_USERS\%SID%\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
 echo Registry values changed. 
 
 REM -->  set visual effect to custom
 echo Setting visual effects to Custom
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f
 
 
 REM ---> Check if New Microsoft Teams is running
@@ -304,30 +308,30 @@ REM ---> try to update office if possible
 
 
 REM --> Enable, use printscreen to open snipping tool
-reg add "HKCU\Control Panel\Keyboard" /v "PrintScreenKeyForSnippingEnabled" /t REG_DWORD /d 1 /f
+reg add "HKEY_USERS\%SID%\Control Panel\Keyboard" /v "PrintScreenKeyForSnippingEnabled" /t REG_DWORD /d 1 /f
 
 
 REM --> Add DWORD value 01 to enable Storage Sense
 echo Enabling Storage Sense
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
 
 REM --> Add DWORD value 1024 to run Storage Sense
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
 
 echo Run storage sense every week
 REM --> Add DWORD value 2048 to run Storage Sense every week
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 2048 /t REG_DWORD /d 7 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 2048 /t REG_DWORD /d 7 /f
 
 echo Set storage sense never delete downloads
 REM --> Add DWORD value 32 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 1 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 1 /f
 
 REM --> Add DWORD value 512 to never delete downloads
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 60 /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 60 /f
 
 echo Set storagesense to empty recycle bin every 60days
 REM --> Add DWORD value 256 to empty recycle bin every 60 days
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
 echo Registry values added
 
 
@@ -387,8 +391,10 @@ echo Temporary files removed.
 REM --> Delete and reset Windows Update policies
 echo Deleting and resetting Windows Update policies...
 reg delete "HKCU\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /f
+reg delete "HKEY_USERS\%SID%\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /f
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /f
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" /f
+reg delete "HKEY_USERS\%SID%\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" /f
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate" /f
 echo Windows Update policies have been deleted and reset.
  
@@ -403,10 +409,10 @@ echo BITS cache has been deleted.
 REM --> Clear Windows Update cache by renaming files and folders
 echo Clearing Windows Update cache...
 ren %SYSTEMROOT%\winsxs\pending.xml pending.xml.bak
-ren %Systemroot%\SoftwareDistribution SoftwareDistribution.bak
-ren %Systemroot%\SoftwareDistribution\DataStore DataStore.bak
-ren %Systemroot%\SoftwareDistribution\Download Download.bak
-ren %Systemroot%\System32\catroot2 catroot2.bak
+ren %SYSTEMROOT%\SoftwareDistribution SoftwareDistribution.bak
+ren %SYSTEMROOT%\SoftwareDistribution\DataStore DataStore.bak
+ren %SYSTEMROOT%\SoftwareDistribution\Download Download.bak
+ren %SYSTEMROOT%\System32\catroot2 catroot2.bak
 ren %SYSTEMROOT%\WindowsUpdate.log WindowsUpdate.log.bak 
 echo Windows Update cache has been cleared.
 
