@@ -27,7 +27,7 @@ This script simplifies a variety of optimization tasks for your Windows system. 
 Most ease of use, copy the following command, open cmd, copy the following command and paste it into cmd and press enter - et voilà!:
 
 ```shell
-curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > C:\Users\%USERNAME%\Downloads\WuFix-main.CMD && timeout /t 2 >nul && start C:\Users\%USERNAME%\Downloads\WuFix-main.CMD 
+curl https://raw.githubusercontent.com/rajtsic/WuFix/main/WuFix-main.CMD > C:\Users\%USERNAME%\Downloads\WuFix-main.CMD && start C:\Users\%USERNAME%\Downloads\WuFix-main.CMD 
 ```
 
 ### Option 2: Double-Click to Run
