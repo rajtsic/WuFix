@@ -26,10 +26,12 @@ if '%errorlevel%' NEQ '0' (
 ) else ( goto gotAdmin )
 
 :UACPrompt
+REM --> Create a VBScript to prompt for UAC elevation
 echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
 set params= %*
 echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
 
+REM --> Run the VBScript to prompt for UAC elevation
 "%temp%\getadmin.vbs"
 del "%temp%\getadmin.vbs"
 exit /B
