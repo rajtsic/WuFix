@@ -36,7 +36,9 @@ The script is designed to automatically request and acquire administrative right
 
 1. **Download the Script:** Download the script file to your computer.
 
-2. **Double-Click to Run:** Locate the downloaded script file and double-click on it. The script will automatically request and acquire administrative rights and proceed with optimization tasks.
+2. **Rightclick and unblock** Locate the downloaded script file and right-click on it > choose properties > unblock > ok
+
+3. **Double-Click to Run:** (dont start as admin) Double-click on it. The script will automatically request and acquire administrative rights and proceed.
 
 
 
