@@ -325,23 +325,30 @@ REM --> Add DWORD value 01 to enable Storage Sense
 echo Enabling Storage Sense
 reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 01 /t REG_DWORD /d 1 /f
 
-REM --> Add DWORD value 1024 to run Storage Sense
-reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
-
 echo Run storage sense every week
-REM --> Add DWORD value 2048 to run Storage Sense every week
+REM --> Add DWORD value 07 to run Storage Sense every week
 reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 2048 /t REG_DWORD /d 7 /f
+
+REM --> Add DWORD value 01 to enable Delete temporary files
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 04 /t REG_DWORD /d 1 /f
+
+REM --> Add DWORD value 01 to enable Delete files in recycle bin
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 08 /t REG_DWORD /d 1 /f
+
+echo Set storagesense to empty recycle bin every 60days
+REM --> Add DWORD value 256 to empty recycle bin every 60 days
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
 
 echo Set storage sense never delete downloads
 REM --> Add DWORD value 32 to never delete downloads
 reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 32 /t REG_DWORD /d 1 /f
 
-REM --> Add DWORD value 512 to never delete downloads
+REM --> Add DWORD value 60 to never delete downloads
 reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 512 /t REG_DWORD /d 60 /f
 
-echo Set storagesense to empty recycle bin every 60days
-REM --> Add DWORD value 256 to empty recycle bin every 60 days
-reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 256 /t REG_DWORD /d 0x3c /f
+REM --> Add DWORD value 1 to run Storage Sense
+reg add "HKEY_USERS\%SID%\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" /v 1024 /t REG_DWORD /d 1 /f
+
 echo Registry values added
 
 
