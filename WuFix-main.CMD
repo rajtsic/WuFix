@@ -404,6 +404,9 @@ del c:\WIN386.SWP 2> nul
 echo.
 echo Temporary files removed.
 
+REM --> Starting Automating Disk Cleanup tool in Windows
+cleanmgr.exe /d C: /verylowdisk
+
 
 REM --> Delete and reset Windows Update policies
 echo Deleting and resetting Windows Update policies...
