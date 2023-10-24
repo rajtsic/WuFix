@@ -239,6 +239,15 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearc
 echo Cortana has been disabled globally.
 
 
+REM --> Duplicate Performance power plan
+powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+
+REM --> Set the power plan to "Big Performance" as active plan
+powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+
+REM --> Change the name of the power plan to "Big Performance"
+powercfg -changename 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c "Big Performance"
+
 REM --> Add registry values to enable Processor Performance Boost Mode - some computer is not compatible with this, and will not enable this.
 echo Adding registry values enable Processor Performance Boost Mode...
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\be337238-0d82-4146-a960-4f3749d470c7" /v "BoostState" /t REG_DWORD /d 1 /f 
@@ -256,15 +265,30 @@ powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100
 REM ---> Set the current power scheme to the maximum processor state to 100% (plugged in) - some computer is not compatible with this, and will not enable this.
 powercfg -setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100
 
+REM --> Configure hard drive turn off time
+powercfg -change -disk-timeout-ac 20
+powercfg -change -disk-timeout-dc 1
+
+REM --> Configure sleep time
+powercfg -change -standby-timeout-ac 60
+powercfg -change -standby-timeout-dc 30
+
+REM --> Configure display turn off time
+powercfg -change -monitor-timeout-ac 45
+powercfg -change -monitor-timeout-dc 30
+
 Powercfg -setactive SCHEME_CURRENT
 echo Registry values added and current power scheme updated.
 
+REM --> Disable Fastboot
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f
 
-REM --> wanna set syste propterties performance options to optimal
-REM --> however, it doesnt i disable the following
-REM --> Animation windows when minimising/maximising
-REM --> Animate taskbar 
-REM --> Enable peak. 
+
+REM --> want to set system propterties performance options to optimal
+REM --> however, it doesn't i disable the following
+REM --> Disable animation windows when minimising/maximising
+REM --> Disable animate taskbar 
+REM --> Disable peak. 
 echo making performance changes to visual effects
 reg add "HKEY_USERS\%SID%\Control Panel\Desktop" /v UserPreferencesMask /t REG_BINARY /d 9032078010000000 /f
 echo Registry values changed. 
