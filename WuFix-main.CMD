@@ -429,7 +429,7 @@ echo.
 echo Temporary files removed.
 
 REM --> Starting Automating Disk Cleanup tool in Windows
-cleanmgr.exe /d C: /verylowdisk
+start cmd /k "cleanmgr.exe /d C: /verylowdisk && exit"
 
 
 REM --> Delete and reset Windows Update policies
