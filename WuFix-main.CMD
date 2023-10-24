@@ -428,9 +428,6 @@ del c:\WIN386.SWP 2> nul
 echo.
 echo Temporary files removed.
 
-REM --> Starting Automating Disk Cleanup tool in Windows
-start cmd /k "cleanmgr.exe /d C: /verylowdisk && exit"
-
 
 REM --> Delete and reset Windows Update policies
 echo Deleting and resetting Windows Update policies...
@@ -508,6 +505,10 @@ regsvr32.exe /s %windir%\system32\muweb.dll
 regsvr32.exe /s %windir%\system32\wuwebv.dll
 regsvr32.exe /s %windir%\system32\wudriver.dll
 echo DLL files have been registered successfully.
+
+
+REM --> Starting Automating Disk Cleanup tool in Windows
+start cmd /k "cleanmgr.exe /d C: /verylowdisk && exit"
 
 
 REM --> Update Windows Update policy
